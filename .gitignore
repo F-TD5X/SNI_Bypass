@@ -1,0 +1,7 @@
+*.crt
+*.pem
+*.key
+.vscode
+venv
+Caddyfile
+caddy.exe
