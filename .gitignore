@@ -5,3 +5,5 @@
 venv
 Caddyfile
 caddy.exe
+__pycache__
+CertificateManager.bin
