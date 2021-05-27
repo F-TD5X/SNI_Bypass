@@ -34,6 +34,7 @@ def entry(hosts, cert, upstream):
         header_up Host {host}
         transport http {
             dial_timeout 5s
+            tls_insecure_skip_verify
         }
     }
 }

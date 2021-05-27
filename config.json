@@ -283,7 +283,7 @@
                 "avatars3.githubusercontent.com",
                 "user-images.githubusercontent.com"
             ],
-            "enable": false
+            "enable": true
         },
         {
             "name": "Github Gist",
@@ -294,7 +294,7 @@
                 "gist.github.com",
                 "github.com"
             ],
-            "enable": false
+            "enable": true
         },
         {
             "name": "Pixiv",

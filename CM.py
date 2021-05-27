@@ -134,4 +134,5 @@ if __name__ == '__main__':
     cm = CertificateManager()
     cm.load("CertificateManager.bin")
     cm.delCA()
+    os.remove("CertificateManager.bin")
 
