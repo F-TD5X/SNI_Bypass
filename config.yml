@@ -1,12 +1,16 @@
+DefaultSNI: www.baidu.com
 Entry:
-  - hosts:
+  - name: Steam
+    hosts:
       - api.steampowered.com
       - store.steampowered.com
       - steamusercontent-a.akamaihd.net
       - steam-chat.com
+      - steamcommunity.com
     enable: true
     group: steam
-  - hosts:
+  - name: Github
+    hosts:
       - github.com
       - raw.githubusercontent.com
     group: github
@@ -14,7 +18,8 @@ Entry:
     upstream: 
       - 151.101.192.133
       - 151.101.64.133
-  - hosts:
+  - name: Pivix
+    hosts:
       - www.pixiv.net
       - touch.pixiv.net
       - source.pixiv.net
@@ -54,7 +59,8 @@ Entry:
     enable: true
     upstream:
       - pixiv.rmbgame.net
-  - hosts:
+  - name: discord
+    hosts:
       - discord.com
       - discordapp.com
       - dl.discordapp.net

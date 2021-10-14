@@ -8,15 +8,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func listenTLS() {
+func ServeTLS() {
 	l, err := tls.Listen("tcp", ":https", &tls.Config{GetCertificate: getCertificate})
 	if err != nil {
-		log.Error("Can't start tls server.", err)
+		log.Error("Can't start tls server: ", err)
 		return
 	}
 	for {
 		if conn, err := l.Accept(); err != nil {
-			log.Warn("Lose tls conn. ", err)
+			log.Warn("Lose tls conn: ", err)
 		} else {
 			go forward(conn.(*tls.Conn))
 		}
@@ -34,11 +34,12 @@ func forward(s *tls.Conn) {
 	}
 	var i *tls.Conn
 	for _, upstream := range getUpstreams(s.ConnectionState().ServerName) {
-		log.Debug("Trying upstream %s for %s.", upstream, s.ConnectionState().ServerName)
+		log.Debugf("Trying upstream %s for %s.", upstream, s.ConnectionState().ServerName)
 		i, err = tls.Dial("tcp", upstream+":443", &tls.Config{InsecureSkipVerify: true, ServerName: getSNI(s.ConnectionState().ServerName)})
 		if err != nil {
 			log.Errorf("Dial TLS failed to %s. %s", upstream, err)
 		} else {
+			log.Infof("Use upstream %s for %s.", upstream, s.ConnectionState().ServerName)
 			break
 		}
 	}

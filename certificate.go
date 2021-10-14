@@ -104,8 +104,16 @@ func genCA() tls.Certificate {
 
 func init() {
 	if _, err := os.Stat("ca.crt"); err == nil {
-		ca, _ = tls.LoadX509KeyPair("ca.crt", "ca.key")
-		leaf, _ = x509.ParseCertificate(ca.Certificate[0])
+		ca, err = tls.LoadX509KeyPair("ca.crt", "ca.key")
+		if err != nil {
+			log.Error("Can't open CA files. ", err)
+			return
+		}
+		leaf, err = x509.ParseCertificate(ca.Certificate[0])
+		if err != nil {
+			log.Error("Wrong CA files. ", err)
+			return
+		}
 		privKey, _ = rsa.GenerateKey(rand.Reader, 2048)
 	} else {
 		ca = genCA()

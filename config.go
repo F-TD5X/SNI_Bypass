@@ -14,7 +14,9 @@ type HostItem struct {
 }
 
 type YAML struct {
-	Entrys []struct {
+	DefaultSNI string `yaml:"DefaultSNI"`
+	Entrys     []struct {
+		Name     string   `yaml:"name"`
 		Hosts    []string `yaml:"hosts"`
 		Enable   bool     `yaml:"enable"`
 		Group    string   `yaml:"group"`
@@ -48,18 +50,18 @@ func getSNI(host string) string {
 			return v.Sni
 		}
 	}
-	return "baidu.com"
+	return c.DefaultSNI
 }
 
 func init() {
 	data, err := ioutil.ReadFile("config.yml")
 	if err != nil {
-		log.Error(err)
+		log.Error("Can't open config file: ", err)
 		return
 	}
 	err = yaml.Unmarshal(data, &c)
 	if err != nil {
-		log.Error(err)
+		log.Error("Can't pharse config file: ", err)
 		return
 	}
 	c.Hosts = make(map[string]HostItem)
