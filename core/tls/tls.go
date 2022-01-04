@@ -1,15 +1,17 @@
-package main
+package tls
 
 import (
 	"crypto/tls"
 	"io"
 	"sync"
 
+	"github.com/F-TD5X/SNI_Bypass/core/certificate"
+	c "github.com/F-TD5X/SNI_Bypass/core/config"
 	log "github.com/sirupsen/logrus"
 )
 
 func ServeTLS() {
-	l, err := tls.Listen("tcp", ":https", &tls.Config{GetCertificate: getCertificate})
+	l, err := tls.Listen("tcp", ":https", &tls.Config{GetCertificate: certificate.GetCertificate})
 	if err != nil {
 		log.Error("Can't start tls server: ", err)
 		return
@@ -29,13 +31,13 @@ func forward(s *tls.Conn) {
 		//log.Warningf("Handshake with client failed. With Servername: %s. Error: %s", s.ConnectionState().ServerName, err)
 		return
 	}
-	if _, ok := c.Hosts[s.ConnectionState().ServerName]; !ok {
+	if _, ok := c.Config.Hosts[s.ConnectionState().ServerName]; !ok {
 		return
 	}
 	var i *tls.Conn
-	for _, upstream := range getUpstreams(s.ConnectionState().ServerName) {
+	for _, upstream := range c.GetUpstreams(s.ConnectionState().ServerName) {
 		log.Debugf("Trying upstream %s for %s.", upstream, s.ConnectionState().ServerName)
-		i, err = tls.Dial("tcp", upstream+":443", &tls.Config{InsecureSkipVerify: true, ServerName: getSNI(s.ConnectionState().ServerName)})
+		i, err = tls.Dial("tcp", upstream+":443", &tls.Config{InsecureSkipVerify: true, ServerName: c.GetSNI(s.ConnectionState().ServerName)})
 		if err != nil {
 			log.Errorf("Dial TLS failed to %s. %s", upstream, err)
 		} else {

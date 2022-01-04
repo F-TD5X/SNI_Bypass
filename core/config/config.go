@@ -1,6 +1,7 @@
-package main
+package config
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	log "github.com/sirupsen/logrus"
@@ -27,9 +28,9 @@ type YAML struct {
 	Hosts      map[string]HostItem
 }
 
-func getUpstreams(host string) []string {
-	if v, ok := c.Hosts[host]; ok {
-		if g, ok := c.HostGroups[v.Group]; ok {
+func GetUpstreams(host string) []string {
+	if v, ok := Config.Hosts[host]; ok {
+		if g, ok := Config.HostGroups[v.Group]; ok {
 			return g
 		} else {
 			return v.Upstream
@@ -40,17 +41,17 @@ func getUpstreams(host string) []string {
 }
 
 var (
-	c     YAML
-	hosts []string
+	Config YAML
+	Hosts  []string
 )
 
-func getSNI(host string) string {
-	if v, ok := c.Hosts[host]; ok {
+func GetSNI(host string) string {
+	if v, ok := Config.Hosts[host]; ok {
 		if v.Sni != "" {
 			return v.Sni
 		}
 	}
-	return c.DefaultSNI
+	return Config.DefaultSNI
 }
 
 func init() {
@@ -59,18 +60,26 @@ func init() {
 		log.Error("Can't open config file: ", err)
 		return
 	}
-	err = yaml.Unmarshal(data, &c)
+	err = yaml.Unmarshal(data, &Config)
 	if err != nil {
 		log.Error("Can't pharse config file: ", err)
 		return
 	}
-	c.Hosts = make(map[string]HostItem)
-	for _, v := range c.Entrys {
+	Config.Hosts = make(map[string]HostItem)
+	for _, v := range Config.Entrys {
 		if v.Enable {
-			hosts = append(hosts, v.Hosts...)
+			Hosts = append(Hosts, v.Hosts...)
 			for _, h := range v.Hosts {
-				c.Hosts[h] = HostItem{Group: v.Group, Upstream: v.Upstream, Sni: v.Sni}
+				Config.Hosts[h] = HostItem{Group: v.Group, Upstream: v.Upstream, Sni: v.Sni}
 			}
 		}
 	}
+}
+
+func GenHostsString() string {
+	ret := ""
+	for _, v := range Hosts {
+		ret += fmt.Sprintf("127.0.0.1 %s # SNI \n", v)
+	}
+	return ret
 }

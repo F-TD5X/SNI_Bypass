@@ -3,3 +3,5 @@ build
 bin
 *.crt
 *.key
+/hosts
+hosts.txt
